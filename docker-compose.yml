@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tocsolar-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tocsolar
+      POSTGRES_PASSWORD: tocsolar
+      POSTGRES_DB: tocsolar
+    ports:
+      # Host 5433 para não conflitar com outros Postgres locais (container usa 5432).
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tocsolar -d tocsolar"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: tocsolar-redis
+    restart: unless-stopped
+    ports:
+      # Host 6381 para não conflitar com outros Redis locais (container usa 6379).
+      - "6381:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:

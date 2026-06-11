@@ -1,0 +1,80 @@
+# Esboço de spec do DigitalOcean App Platform para a TOCSOLAR.
+# Ajuste <<CONFIRMAR>> antes de aplicar (doctl apps create --spec infrastructure/.do/app.yaml).
+name: tocsolar
+region: nyc # <<CONFIRMAR região (ex.: nyc, sfo)>>
+
+services:
+  # --- Web (Next.js SSR/standalone) ---
+  - name: web
+    dockerfile_path: apps/web/Dockerfile
+    source_dir: / # build a partir da raiz do monorepo
+    github:
+      repo: <<CONFIRMAR org/repo>>
+      branch: main
+      deploy_on_push: true
+    http_port: 3000
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    routes:
+      - path: /
+    envs:
+      - key: NEXT_PUBLIC_API_URL
+        value: ${api.PUBLIC_URL}/api
+      - key: NEXT_PUBLIC_SITE_URL
+        value: <<CONFIRMAR https://dominio-final>>
+      - key: NEXT_PUBLIC_GTM_ID
+        value: <<CONFIRMAR GTM-XXXXXXX>>
+
+  # --- API (NestJS) ---
+  - name: api
+    dockerfile_path: apps/api/Dockerfile
+    source_dir: /
+    github:
+      repo: <<CONFIRMAR org/repo>>
+      branch: main
+      deploy_on_push: true
+    http_port: 3001
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    routes:
+      - path: /api
+    # Aplica migrations antes de cada deploy.
+    run_command: sh -c "npx prisma migrate deploy && node dist/main.js"
+    envs:
+      - key: DATABASE_URL
+        value: ${db.DATABASE_URL}
+        scope: RUN_TIME
+      - key: REDIS_HOST
+        value: ${redis.HOSTNAME}
+      - key: REDIS_PORT
+        value: ${redis.PORT}
+      - key: CORS_ORIGIN
+        value: <<CONFIRMAR https://dominio-final>>
+      - key: EVOLUTION_API_URL
+        value: <<CONFIRMAR>>
+        type: SECRET
+      - key: EVOLUTION_API_KEY
+        value: <<CONFIRMAR>>
+        type: SECRET
+      - key: EVOLUTION_INSTANCE
+        value: <<CONFIRMAR>>
+      - key: LEAD_NOTIFY_WHATSAPP
+        value: "5585991618044"
+      - key: SMTP_URL
+        value: <<CONFIRMAR>>
+        type: SECRET
+      - key: SMTP_FROM
+        value: <<CONFIRMAR>>
+      - key: LEAD_NOTIFY_EMAIL
+        value: <<CONFIRMAR>>
+
+# --- Recursos gerenciados <<CONFIRMAR planos>> ---
+databases:
+  - name: db
+    engine: PG
+    version: "16"
+    production: false
+  - name: redis
+    engine: REDIS
+    version: "7"
+    production: false

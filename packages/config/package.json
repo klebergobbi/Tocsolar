@@ -1,0 +1,11 @@
+{
+  "name": "@tocsolar/config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "files": [
+    "tailwind",
+    "eslint",
+    "tsconfig"
+  ]
+}

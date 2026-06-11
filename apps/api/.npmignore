@@ -1,0 +1,2 @@
+# Presença deste arquivo faz o empacotamento (pnpm deploy) ignorar o .gitignore
+# da raiz — assim o `dist` (gitignored) entra via o whitelist "files" do package.json.
