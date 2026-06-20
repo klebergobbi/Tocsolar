@@ -1,0 +1,16 @@
+# Proxy reverso TOCSOLAR.
+# Por enquanto serve por IP em HTTP (porta 80). Quando houver domínio,
+# trocar `:80` pelo domínio (ex.: tocsolar.com.br) que o Caddy emite TLS automático.
+:80 {
+	encode gzip
+
+	# API NestJS (prefixo global /api): /api/health, /api/leads
+	handle /api/* {
+		reverse_proxy api:3001
+	}
+
+	# Tudo o mais é o site Next.js
+	handle {
+		reverse_proxy web:3000
+	}
+}

@@ -22,7 +22,11 @@ FROM base AS runner
 ENV NODE_ENV=production
 ENV PORT=3001
 WORKDIR /app
+# Prisma no Alpine precisa de libssl (openssl) p/ os engines (migrate + queries em runtime).
+RUN apk add --no-cache openssl
 COPY --from=builder /prod/api ./
+# Garante schema + migrations no runner (prisma migrate/generate em runtime — ver compose).
+COPY --from=builder /app/apps/api/prisma ./prisma
 EXPOSE 3001
-# Migrations são aplicadas no deploy (prisma migrate deploy) antes de subir — ver app.yaml.
+# Migrations são aplicadas no runtime (prisma migrate deploy) antes de subir — ver infrastructure/docker-compose.prod.yml.
 CMD ["node", "dist/main.js"]
