@@ -494,7 +494,9 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Seed do admin:\*\* `prisma/seed.cjs` (JS puro, idempotente — upsert). Roda no boot do container (command do compose). Credenciais via `ADMIN_EMAIL`/`ADMIN_PASSWORD`; senha de prod está só no `.env.prod` do droplet — TROCAR após 1º acesso.
 
-\- \*\*Roadmap:\*\* ✅ Fase 1 (auth + CRM) · ✅ Fase 2 (orçamentos). \*\*Fase 3 = Financeiro completo\*\* (parcelas + custos + fluxo de caixa). Fase 4 = Dashboard/relatórios.
+\- \*\*Financeiro · Recebíveis (Fase 3a — EM PRODUÇÃO):\*\* `ReceivablesModule` — CRUD `/api/receivables` + `POST /api/receivables/generate-from-quote/:quoteId` (divide o total do orçamento em N parcelas mensais; resto na última; datas ancoradas em 12:00 UTC p/ não pular dia). Modelo `Receivable` (migration `add_receivables`). "Vencido" é \*\*derivado\*\* (pendente && vencimento < hoje), não persistido. Web: `/admin/financeiro/recebiveis` (resumo a receber/vencido/recebido, filtro, dar baixa/reabrir, excluir) + botão "Gerar parcelas" no detalhe do orçamento.
+
+\- \*\*Roadmap:\*\* ✅ Fase 1 (auth + CRM) · ✅ Fase 2 (orçamentos) · ✅ Fase 3a (recebíveis/parcelas). \*\*Fase 3b = Custos/despesas\*\* · Fase 3c = Fluxo de caixa. Fase 4 = Dashboard/relatórios.
 
 
 
