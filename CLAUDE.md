@@ -460,7 +460,7 @@ pnpm lint
 
 
 
-\## 13. Status do projeto (atualizado em 2026-06-10)
+\## 13. Status do projeto (atualizado em 2026-06-20)
 
 
 
@@ -476,7 +476,19 @@ pnpm lint
 
 \### API (`apps/api`) — NestJS
 
-Módulo de leads (DTO + controller + service), notificações (Evolution/WhatsApp + mail + processor BullMQ), Prisma/Postgres com migrations. \*\*Ainda não rodado/validado localmente nesta etapa.\*\*
+Módulo de leads (DTO + controller + service), notificações (Evolution/WhatsApp + mail + processor BullMQ), Prisma/Postgres com migrations. \*\*Rodando em produção\*\* (ver Deploy abaixo): `migrate deploy` OK, rotas `GET /api/health` e `POST /api/leads` validadas (health 200; payload inválido → 400 com mensagens PT-BR).
+
+
+
+\### 🚀 Deploy — EM PRODUÇÃO (DigitalOcean droplet)
+
+\- \*\*No ar:\*\* `http://104.131.161.21` (HTTP, sem domínio/TLS ainda). Site `/` 200, `/api/health` 200.
+
+\- \*\*Stack:\*\* droplet único (`s-1vcpu-1gb`, nyc3) via Docker Compose + Caddy. 5 containers: caddy (80/443, proxy `/api/*`→api:3001, resto→web:3000), web (Next standalone), api (NestJS), postgres 16, redis 7 (os dois últimos internos).
+
+\- \*\*Infra commitada/pushed\*\* (commit `8367931`): `infrastructure/{docker-compose.prod.yml,Caddyfile,deploy.sh,.env.prod.example}` + Dockerfiles (openssl p/ Prisma no Alpine, build args NEXT\_PUBLIC\_\* na web). GitHub: `github.com/klebergobbi/Tocsolar` (público).
+
+\- \*\*Redeploy:\*\* `/opt/tocsolar` no droplet é checkout git → `ssh -i ~/.ssh/tocsolar_deploy root@104.131.161.21 'cd /opt/tocsolar && git pull && bash infrastructure/deploy.sh'`. O `.env.prod` (segredos) vive só no droplet, é gitignored e preservado no pull.
 
 
 
@@ -497,6 +509,14 @@ Módulo de leads (DTO + controller + service), notificações (Evolution/WhatsAp
 \- \*\*Header sem menu mobile:\*\* a nav usa `hidden md:flex` e não há hambúrguer — em telas pequenas os links do menu não aparecem (só o botão de WhatsApp). \*\*Próxima sessão sugerida.\*\*
 
 \- Versão mobile (responsivo) ainda \*\*não validada visualmente\*\* (screenshots Playwright não executados).
+
+\- \*\*`NEXT\_PUBLIC\_GTM\_ID` vazio em produção\*\* → GA4/Google Ads não disparam. É build arg: preencher no `.env.prod` do droplet e rebuildar a web (redeploy).
+
+\- \*\*Sem HTTPS/domínio:\*\* trocar `:80` pelo domínio no `Caddyfile` ativa TLS automático do Caddy.
+
+\- \*\*Notificações de lead desativadas\*\* (Evolution/SMTP vazios no `.env.prod`): o lead persiste no banco, mas ninguém é avisado por WhatsApp/e-mail.
+
+\- \*\*Rotacionar o token DO\*\* usado no provisionamento/deploy.
 
 \- Ambiente: arquivos de `node_modules` somem em `C:\\Projetos` (Defender/OneDrive). Fix: `pnpm install --force`. Excluir a pasta do antivírus/sync.
 
