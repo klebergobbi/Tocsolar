@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Background do Hero — TOCSOLAR. Arte ORIGINAL (não é foto de terceiros).
+  Painéis solares estilizados + sol, nas cores da marca (laranja #F59E0B / grafite #1A1A1A).
+  SUBSTITUIR por foto REAL de projeto da TOCSOLAR (ou banco de imagens licenciado) quando houver acervo (LGPD).
+-->
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0C0C0D"/>
+      <stop offset="0.55" stop-color="#161616"/>
+      <stop offset="1" stop-color="#1A1A1A"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.78" cy="0.18" r="0.55">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0.85"/>
+      <stop offset="0.25" stop-color="#F59E0B" stop-opacity="0.35"/>
+      <stop offset="0.6" stop-color="#F59E0B" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1F2A36"/>
+      <stop offset="1" stop-color="#0E141B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Céu / base grafite -->
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <!-- Brilho do sol -->
+  <rect width="1600" height="900" fill="url(#sun)"/>
+  <circle cx="1248" cy="162" r="74" fill="#F59E0B" fill-opacity="0.9"/>
+
+  <!-- Campo de painéis em perspectiva (faixa inferior) -->
+  <g opacity="0.92">
+    <!-- Fileira distante -->
+    <g transform="translate(0 560)">
+      <polygon points="120,40 1480,40 1560,96 40,96" fill="url(#panel)" stroke="#F59E0B" stroke-opacity="0.18"/>
+    </g>
+    <!-- Fileira média -->
+    <g transform="translate(0 620)">
+      <polygon points="40,48 1560,48 1660,128 -60,128" fill="url(#panel)" stroke="#F59E0B" stroke-opacity="0.25"/>
+    </g>
+    <!-- Fileira próxima (com grade de células) -->
+    <g transform="translate(0 720)">
+      <polygon points="-60,60 1660,60 1820,200 -220,200" fill="url(#panel)" stroke="#F59E0B" stroke-opacity="0.35"/>
+    </g>
+  </g>
+
+  <!-- Linhas de célula (grade sutil) na fileira próxima -->
+  <g stroke="#F59E0B" stroke-opacity="0.12" stroke-width="2">
+    <line x1="240" y1="780" x2="170" y2="920"/>
+    <line x1="500" y1="780" x2="470" y2="920"/>
+    <line x1="760" y1="780" x2="760" y2="920"/>
+    <line x1="1020" y1="780" x2="1055" y2="920"/>
+    <line x1="1300" y1="780" x2="1370" y2="920"/>
+  </g>
+
+  <!-- Vinheta inferior p/ contraste do texto -->
+  <rect width="1600" height="900" fill="url(#sky)" opacity="0"/>
+</svg>

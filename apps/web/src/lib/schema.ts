@@ -31,6 +31,11 @@ export const FAQ_ITEMS: { pergunta: string; resposta: string }[] = [
       "Sim. Nossa equipe própria cuida de tudo: projeto, equipamentos, instalação e a homologação junto à distribuidora.",
   },
   {
+    pergunta: "Qual o prazo de instalação?",
+    resposta:
+      "A instalação em si costuma levar de 1 a 3 dias, conforme o tamanho do sistema. O prazo total até o sistema gerar inclui o projeto e a homologação na distribuidora — definimos um cronograma claro no orçamento.",
+  },
+  {
     pergunta: "Funciona em dias nublados ou à noite?",
     resposta:
       "Em dias nublados o sistema gera menos, mas continua gerando — o dimensionamento já considera a média anual. À noite, o sistema conectado à rede usa o crédito de energia gerado durante o dia.",
