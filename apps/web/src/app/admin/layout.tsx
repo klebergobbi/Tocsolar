@@ -10,12 +10,29 @@ import {
   type AdminUser,
 } from "@/lib/admin-api";
 
-const NAV = [
+type NavItem = {
+  href: string;
+  label: string;
+  exact?: boolean;
+  prefix?: string; // para destaque do item ativo
+  adminOnly?: boolean;
+};
+
+const NAV: NavItem[] = [
   { href: "/admin", label: "Painel", exact: true },
-  { href: "/admin/clientes", label: "Clientes", exact: false },
-  { href: "/admin/orcamentos", label: "Orçamentos", exact: false },
-  { href: "/admin/financeiro/recebiveis", label: "Financeiro", exact: false },
+  { href: "/admin/clientes", label: "Clientes" },
+  { href: "/admin/orcamentos", label: "Orçamentos" },
+  {
+    href: "/admin/financeiro/recebiveis",
+    label: "Financeiro",
+    prefix: "/admin/financeiro",
+    adminOnly: true,
+  },
+  { href: "/admin/usuarios", label: "Usuários", adminOnly: true },
 ];
+
+// Prefixos de rotas restritas a admin (comercial é redirecionado).
+const ADMIN_ONLY_PREFIXES = ["/admin/financeiro", "/admin/usuarios"];
 
 export default function AdminLayout({
   children,
@@ -38,7 +55,16 @@ export default function AdminLayout({
       router.replace("/admin/login");
       return;
     }
-    setUser(getStoredUser());
+    const stored = getStoredUser();
+    setUser(stored);
+    // Comercial não acessa rotas restritas a admin.
+    if (
+      stored?.role !== "admin" &&
+      ADMIN_ONLY_PREFIXES.some((p) => pathname?.startsWith(p))
+    ) {
+      router.replace("/admin");
+      return;
+    }
     setReady(true);
   }, [isLogin, pathname, router]);
 
@@ -77,10 +103,12 @@ export default function AdminLayout({
           TOCSOLAR
         </div>
         <nav className="flex-1 space-y-1 px-3">
-          {NAV.map((item) => {
+          {NAV.filter(
+            (item) => !item.adminOnly || user?.role === "admin",
+          ).map((item) => {
             const active = item.exact
               ? pathname === item.href
-              : pathname?.startsWith(item.href);
+              : pathname?.startsWith(item.prefix ?? item.href);
             return (
               <Link
                 key={item.href}
@@ -105,9 +133,16 @@ export default function AdminLayout({
         <header className="flex items-center justify-between border-b border-brand-black/10 bg-white px-6 py-3">
           <span className="text-sm font-semibold md:hidden">TOCSOLAR Admin</span>
           <div className="ml-auto flex items-center gap-4">
-            <span className="text-sm text-brand-black/60">
+            <Link
+              href="/admin/conta"
+              className="text-sm text-brand-black/60 hover:text-brand-orange"
+              title="Minha conta"
+            >
               {user?.nome ?? user?.email}
-            </span>
+              {user?.role === "comercial" && (
+                <span className="ml-1 text-xs text-brand-black/40">(comercial)</span>
+              )}
+            </Link>
             <button
               type="button"
               onClick={logout}

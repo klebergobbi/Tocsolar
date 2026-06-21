@@ -73,7 +73,8 @@ export default function AdminDashboardPage() {
         </div>
       </section>
 
-      {/* Financeiro */}
+      {/* Financeiro (oculto para o perfil comercial) */}
+      {financeiro && (
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-brand-black/50">
           Financeiro
@@ -95,7 +96,9 @@ export default function AdminDashboardPage() {
           />
         </div>
       </section>
+      )}
 
+      {financeiro && (
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Receita mensal (gráfico CSS) */}
         <section className="rounded-2xl border border-brand-black/10 bg-white p-5">
@@ -173,6 +176,7 @@ export default function AdminDashboardPage() {
           )}
         </section>
       </div>
+      )}
     </div>
   );
 }

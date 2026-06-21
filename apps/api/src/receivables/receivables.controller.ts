@@ -10,13 +10,16 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { Roles } from "../auth/roles.decorator";
+import { RolesGuard } from "../auth/roles.guard";
 import { CreateReceivableDto } from "./dto/create-receivable.dto";
 import { GenerateReceivablesDto } from "./dto/generate-receivables.dto";
 import { UpdateReceivableDto } from "./dto/update-receivable.dto";
 import { ReceivablesService } from "./receivables.service";
 
 @Controller("receivables")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles("admin")
 export class ReceivablesController {
   constructor(private readonly receivables: ReceivablesService) {}
 

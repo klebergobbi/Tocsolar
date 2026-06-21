@@ -18,29 +18,16 @@ export class DashboardService {
     private readonly cashflow: CashflowService,
   ) {}
 
-  async summary() {
-    const [
-      leads,
-      clientes,
-      clientesGroup,
-      orcamentos,
-      orcamentosGroup,
-      cf,
-      proximos,
-    ] = await Promise.all([
-      this.prisma.lead.count(),
-      this.prisma.client.count(),
-      this.prisma.client.groupBy({ by: ["status"], _count: true }),
-      this.prisma.quote.count(),
-      this.prisma.quote.groupBy({ by: ["status"], _count: true }),
-      this.cashflow.summary(),
-      this.prisma.receivable.findMany({
-        where: { status: "pendente" },
-        orderBy: { vencimento: "asc" },
-        take: 5,
-        include: { client: { select: { nome: true } } },
-      }),
-    ]);
+  async summary(role: string) {
+    const isAdmin = role === "admin";
+    const [leads, clientes, clientesGroup, orcamentos, orcamentosGroup] =
+      await Promise.all([
+        this.prisma.lead.count(),
+        this.prisma.client.count(),
+        this.prisma.client.groupBy({ by: ["status"], _count: true }),
+        this.prisma.quote.count(),
+        this.prisma.quote.groupBy({ by: ["status"], _count: true }),
+      ]);
 
     const clientesPorStatus = toRecord(
       clientesGroup as { status: string; _count: number }[],
@@ -51,16 +38,40 @@ export class DashboardService {
     const aprovados = orcamentosPorStatus["aprovado"] ?? 0;
     const fechados = clientesPorStatus["fechado"] ?? 0;
 
+    const funil = {
+      leads,
+      clientes,
+      orcamentos,
+      orcamentosAprovados: aprovados,
+      clientesFechados: fechados,
+      convLeadCliente: pct(clientes, leads),
+      convOrcamentoAprovado: pct(aprovados, orcamentos),
+    };
+
+    // Perfil comercial não enxerga o financeiro.
+    if (!isAdmin) {
+      return {
+        funil,
+        clientesPorStatus,
+        orcamentosPorStatus,
+        financeiro: null,
+        receitaMensal: [],
+        proximosVencimentos: [],
+      };
+    }
+
+    const [cf, proximos] = await Promise.all([
+      this.cashflow.summary(),
+      this.prisma.receivable.findMany({
+        where: { status: "pendente" },
+        orderBy: { vencimento: "asc" },
+        take: 5,
+        include: { client: { select: { nome: true } } },
+      }),
+    ]);
+
     return {
-      funil: {
-        leads,
-        clientes,
-        orcamentos,
-        orcamentosAprovados: aprovados,
-        clientesFechados: fechados,
-        convLeadCliente: pct(clientes, leads),
-        convOrcamentoAprovado: pct(aprovados, orcamentos),
-      },
+      funil,
       clientesPorStatus,
       orcamentosPorStatus,
       financeiro: cf.totais,

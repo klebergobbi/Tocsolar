@@ -443,7 +443,7 @@ export type Dashboard = {
   };
   clientesPorStatus: Record<string, number>;
   orcamentosPorStatus: Record<string, number>;
-  financeiro: Cashflow["totais"];
+  financeiro: Cashflow["totais"] | null;
   receitaMensal: { mes: string; entradas: number; saidas: number }[];
   proximosVencimentos: {
     id: string;
@@ -457,3 +457,61 @@ export type Dashboard = {
 export const dashboardApi = {
   get: () => authFetch(`/dashboard`).then((r) => json<Dashboard>(r)),
 };
+
+// ===== Usuários / perfis =====
+
+export type Role = "admin" | "comercial";
+
+export const ROLE_LABEL: Record<Role, string> = {
+  admin: "Administrador",
+  comercial: "Comercial",
+};
+
+export type ManagedUser = {
+  id: string;
+  nome: string;
+  email: string;
+  role: Role;
+  ativo: boolean;
+  createdAt: string;
+};
+
+export const usersApi = {
+  list: () => authFetch(`/users`).then((r) => json<ManagedUser[]>(r)),
+  create: (data: {
+    nome: string;
+    email: string;
+    senha: string;
+    role: Role;
+  }) =>
+    authFetch(`/users`, { method: "POST", body: JSON.stringify(data) }).then(
+      (r) => json<ManagedUser>(r),
+    ),
+  update: (
+    id: string,
+    data: Partial<{ nome: string; role: Role; ativo: boolean; senha: string }>,
+  ) =>
+    authFetch(`/users/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }).then((r) => json<ManagedUser>(r)),
+  remove: (id: string) =>
+    authFetch(`/users/${id}`, { method: "DELETE" }).then((r) =>
+      json<{ ok: boolean }>(r),
+    ),
+};
+
+export async function changePassword(
+  senhaAtual: string,
+  novaSenha: string,
+): Promise<void> {
+  const res = await authFetch(`/auth/change-password`, {
+    method: "POST",
+    body: JSON.stringify({ senhaAtual, novaSenha }),
+  });
+  if (!res.ok) {
+    throw new Error(
+      res.status === 400 ? "Senha atual incorreta" : "Erro ao trocar a senha",
+    );
+  }
+}
