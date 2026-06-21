@@ -9,6 +9,7 @@ import { ClientsModule } from "./clients/clients.module";
 import { QuotesModule } from "./quotes/quotes.module";
 import { ReceivablesModule } from "./receivables/receivables.module";
 import { ExpensesModule } from "./expenses/expenses.module";
+import { CashflowModule } from "./cashflow/cashflow.module";
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ExpensesModule } from "./expenses/expenses.module";
     QuotesModule,
     ReceivablesModule,
     ExpensesModule,
+    CashflowModule,
   ],
   controllers: [AppController],
 })

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/admin/financeiro/recebiveis", label: "Contas a receber" },
   { href: "/admin/financeiro/despesas", label: "Despesas" },
-  // { href: "/admin/financeiro/fluxo", label: "Fluxo de caixa" }, // Fase 3c
+  { href: "/admin/financeiro/fluxo", label: "Fluxo de caixa" },
 ];
 
 export function FinanceTabs() {

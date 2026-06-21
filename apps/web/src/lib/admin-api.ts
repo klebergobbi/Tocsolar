@@ -388,3 +388,43 @@ export function formatBRL(value: number): string {
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
+
+const MESES_PT = [
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez",
+];
+
+// "2026-06" -> "jun/2026"
+export function formatMonth(mes: string): string {
+  const [ano, m] = mes.split("-");
+  return `${MESES_PT[Number(m) - 1] ?? m}/${ano}`;
+}
+
+// ===== Fluxo de caixa =====
+
+export type CashflowMonth = {
+  mes: string;
+  entradasRealizadas: number;
+  saidasRealizadas: number;
+  entradasPrevistas: number;
+  saidasPrevistas: number;
+  saldoRealizado: number;
+  saldoMes: number;
+  saldoAcumulado: number;
+};
+
+export type Cashflow = {
+  meses: CashflowMonth[];
+  totais: {
+    recebido: number;
+    pago: number;
+    saldoRealizado: number;
+    aReceber: number;
+    aPagar: number;
+    saldoPrevisto: number;
+  };
+};
+
+export const cashflowApi = {
+  get: () => authFetch(`/cashflow`).then((r) => json<Cashflow>(r)),
+};
