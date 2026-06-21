@@ -490,9 +490,11 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Admin (web):\*\* `/admin/login`, `/admin` (painel/KPIs por status), `/admin/clientes` (lista, busca, filtro, criar, mudar status, excluir). `lib/admin-api.ts` é o client.
 
+\- \*\*Orçamentos (Fase 2 — EM PRODUÇÃO):\*\* `QuotesModule` — CRUD protegido `/api/quotes` com itens aninhados, número sequencial (max+1 em transação), total calculado no service (subtotal − desconto). Modelos `Quote` + `QuoteItem` (migration `add_quotes`). Web: `/admin/orcamentos` (lista, criar via `QuoteForm`, detalhe/editar, status, excluir) + `/admin/orcamentos/[id]/imprimir` (PDF via `window.print()`; `admin/layout` renderiza rota `/imprimir` sem sidebar). \*\*Nota:\*\* número é max+1 — pode repetir se um orçamento for excluído (ok p/ MVP).
+
 \- \*\*Seed do admin:\*\* `prisma/seed.cjs` (JS puro, idempotente — upsert). Roda no boot do container (command do compose). Credenciais via `ADMIN_EMAIL`/`ADMIN_PASSWORD`; senha de prod está só no `.env.prod` do droplet — TROCAR após 1º acesso.
 
-\- \*\*Roadmap:\*\* Fase 2 = Orçamentos (modelo Quote + itens + PDF). Fase 3 = Financeiro \*\*completo\*\* (parcelas + custos + fluxo de caixa). Fase 4 = Dashboard/relatórios.
+\- \*\*Roadmap:\*\* ✅ Fase 1 (auth + CRM) · ✅ Fase 2 (orçamentos). \*\*Fase 3 = Financeiro completo\*\* (parcelas + custos + fluxo de caixa). Fase 4 = Dashboard/relatórios.
 
 
 
