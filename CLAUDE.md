@@ -498,7 +498,9 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Financeiro · Despesas (Fase 3b — EM PRODUÇÃO):\*\* `ExpensesModule` — CRUD `/api/expenses` (filtros categoria/status/data; categorias: equipamento, mao_de_obra, operacional, marketing, imposto, outro; status pago/pendente; `pagoEm` = data quando pago — regime de caixa; vínculo opcional a `Quote`). Modelo `Expense` (migration `add_expenses`). Web: `/admin/financeiro/despesas` (resumo pago/pendente, criar, filtros, baixa, excluir) + `FinanceTabs` (Contas a receber | Despesas).
 
-\- \*\*Roadmap:\*\* ✅ Fase 1 · ✅ Fase 2 · ✅ Fase 3a (recebíveis) · ✅ Fase 3b (despesas). \*\*Fase 3c = Fluxo de caixa\*\* (entradas recebidas − saídas pagas por período). Fase 4 = Dashboard/relatórios.
+\- \*\*Financeiro · Fluxo de caixa (Fase 3c — EM PRODUÇÃO):\*\* `CashflowModule` — `GET /api/cashflow` agrega recebíveis (entradas) e despesas (saídas) por mês, em \*\*realizado\*\* (pagos, pela data de pagamento) e \*\*previsto\*\* (pendentes, por vencimento/competência), com saldo do mês e acumulado. Sem novo modelo (só agregação). Web: `/admin/financeiro/fluxo` (cards realizado/previsto + tabela mensal com acumulado).
+
+\- \*\*Roadmap:\*\* ✅ Fase 1 (auth+CRM) · ✅ Fase 2 (orçamentos) · ✅ \*\*Fase 3 Financeiro completo\*\* (3a recebíveis · 3b despesas · 3c fluxo de caixa). \*\*Fase 4 = Dashboard/relatórios\*\* (próxima).
 
 
 
