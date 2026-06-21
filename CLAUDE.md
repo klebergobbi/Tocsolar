@@ -480,6 +480,22 @@ Módulo de leads (DTO + controller + service), notificações (Evolution/WhatsAp
 
 
 
+\### 🔐 Área administrativa (Fase 1 — EM PRODUÇÃO)
+
+Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de marketing nessas rotas). \*\*Validado em produção end-to-end.\*\*
+
+\- \*\*Auth (API):\*\* `AuthModule` — login e-mail/senha (`bcryptjs` + JWT, `JwtStrategy`/`JwtAuthGuard`). Rotas `POST /api/auth/login`, `GET /api/auth/me`. Exige `JWT_SECRET` no env (a API não sobe sem). Token JWT no `localStorage` (front).
+
+\- \*\*Clientes/CRM (API):\*\* `ClientsModule` — CRUD protegido `/api/clients` (+ filtro status/busca) e `POST /api/clients/from-lead/:leadId` (converte Lead→Client). Modelos Prisma `User` e `Client` (migration `20260621135750_add_user_and_client`).
+
+\- \*\*Admin (web):\*\* `/admin/login`, `/admin` (painel/KPIs por status), `/admin/clientes` (lista, busca, filtro, criar, mudar status, excluir). `lib/admin-api.ts` é o client.
+
+\- \*\*Seed do admin:\*\* `prisma/seed.cjs` (JS puro, idempotente — upsert). Roda no boot do container (command do compose). Credenciais via `ADMIN_EMAIL`/`ADMIN_PASSWORD`; senha de prod está só no `.env.prod` do droplet — TROCAR após 1º acesso.
+
+\- \*\*Roadmap:\*\* Fase 2 = Orçamentos (modelo Quote + itens + PDF). Fase 3 = Financeiro \*\*completo\*\* (parcelas + custos + fluxo de caixa). Fase 4 = Dashboard/relatórios.
+
+
+
 \### 🚀 Deploy — EM PRODUÇÃO (DigitalOcean droplet)
 
 \- \*\*No ar:\*\* `http://104.131.161.21` (HTTP, sem domínio/TLS ainda). Site `/` 200, `/api/health` 200.
