@@ -10,10 +10,10 @@ const PROVAS = [
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-brand-black text-white">
-      {/* Imagem de fundo — arte ORIGINAL da marca (apps/web/public/hero-bg.svg).
-          SUBSTITUIR por foto REAL de projeto da TOCSOLAR (ou banco licenciado) quando houver acervo. */}
+      {/* Imagem de fundo — foto de banco licenciada (Pexels, uso comercial livre; ver public/CREDITS.md).
+          SUBSTITUIR por foto REAL de projeto da TOCSOLAR quando houver acervo (LGPD). */}
       <Image
-        src="/hero-bg.svg"
+        src="/hero-solar.jpg"
         alt=""
         aria-hidden
         fill
@@ -21,10 +21,14 @@ export function Hero() {
         sizes="100vw"
         className="pointer-events-none select-none object-cover"
       />
-      {/* Overlay p/ contraste do texto (escurece esquerda → meio). */}
+      {/* Overlay p/ contraste do texto: gradiente (escurece esquerda → meio) + leve escurecida geral. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/80 to-brand-black/30"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/85 to-brand-black/40"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-brand-black/20"
       />
       {/* Brilho do sol — token de marca, reforça o canto superior direito. */}
       <div
