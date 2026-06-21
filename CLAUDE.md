@@ -502,7 +502,9 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Dashboard executivo (Fase 4 — EM PRODUÇÃO):\*\* `DashboardModule` — `GET /api/dashboard` agrega funil (leads→clientes→orçamentos→aprovados) com taxas de conversão, status de clientes/orçamentos, KPIs financeiros (reusa `CashflowService`), receita mensal e próximos vencimentos. Web: `/admin` reescrito como painel (cards de funil com conversão, KPIs financeiros, gráfico CSS entradas×saídas, lista de próximos vencimentos).
 
-\- \*\*Status:\*\* ✅ \*\*Área administrativa completa\*\* — Fase 1 (auth+CRM) · Fase 2 (orçamentos) · Fase 3 (financeiro: recebíveis/despesas/fluxo) · Fase 4 (dashboard). Tudo validado end-to-end em produção. Próximos passos opcionais: perfis/permissões (admin/comercial), notificação de vencimentos, exportações (CSV), testar UI por clique.
+\- \*\*Perfis/permissões + usuários (EM PRODUÇÃO):\*\* `RolesGuard` + `@Roles` — rotas financeiras (receivables/expenses/cashflow) e `/api/users` restritas a `admin`; dashboard omite financeiro p/ `comercial`. `UsersModule` (admin-only): CRUD `/api/users` (perfil admin/comercial, ativar/desativar, redefinir senha; não exclui o próprio). `POST /api/auth/change-password`. Web: `/admin/usuarios`, `/admin/conta`; nav e dashboard escondem financeiro p/ comercial. Token segue em localStorage (httpOnly = melhoria futura).
+
+\- \*\*Status:\*\* ✅ \*\*Área administrativa completa\*\* — Fase 1 (auth+CRM) · Fase 2 (orçamentos) · Fase 3 (financeiro: recebíveis/despesas/fluxo) · Fase 4 (dashboard) · perfis/usuários/troca-de-senha. Tudo validado end-to-end em produção. Pendentes opcionais: notificação de vencimentos (BullMQ), export CSV, migrar token p/ cookie httpOnly, testar UI por clique.
 
 
 
