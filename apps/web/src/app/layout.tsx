@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
+import { SiteFrame } from "@/components/layout/SiteFrame";
 import { SITE_URL, getLocalBusinessSchema } from "@/lib/schema";
 import "./globals.css";
 
@@ -75,10 +73,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             />
           </noscript>
         )}
-        <Header />
-        <div className="flex-1">{children}</div>
-        <Footer />
-        <WhatsAppFloat />
+        <SiteFrame>{children}</SiteFrame>
       </body>
     </html>
   );

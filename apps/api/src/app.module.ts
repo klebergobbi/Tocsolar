@@ -4,6 +4,8 @@ import { BullModule } from "@nestjs/bullmq";
 import { AppController } from "./app.controller";
 import { PrismaModule } from "./prisma/prisma.module";
 import { LeadsModule } from "./leads/leads.module";
+import { AuthModule } from "./auth/auth.module";
+import { ClientsModule } from "./clients/clients.module";
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { LeadsModule } from "./leads/leads.module";
     }),
     PrismaModule,
     LeadsModule,
+    AuthModule,
+    ClientsModule,
   ],
   controllers: [AppController],
 })

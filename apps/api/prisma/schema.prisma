@@ -22,5 +22,44 @@ model Lead {
   mensagem         String?
   createdAt        DateTime @default(now())
 
+  client Client? // vínculo opcional quando o lead é convertido em cliente
+
+  @@index([createdAt])
+}
+
+// Usuário do painel administrativo (acesso interno).
+model User {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senhaHash String
+  role      String   @default("admin") // 'admin' (perfis futuros: 'comercial')
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+// Cliente do escritório (CRM). Pode nascer de um Lead convertido.
+model Client {
+  id          String   @id @default(uuid())
+  nome        String
+  whatsapp    String
+  email       String?
+  documento   String? // CPF/CNPJ
+  cidade      String?
+  endereco    String?
+  tipo        String // 'residencial' | 'empresarial' | 'rural'
+  status      String   @default("novo") // novo | em_contato | proposta | fechado | perdido
+  valorConta  Float? // R$/mês da conta de luz
+  observacoes String?
+  // Origem opcional: lead que deu origem ao cliente (1:1).
+  leadId      String?  @unique
+  lead        Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
   @@index([createdAt])
 }

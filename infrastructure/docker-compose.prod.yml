@@ -37,8 +37,8 @@ services:
       dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     env_file: .env.prod
-    # Gera client + aplica migrations antes de subir (DB começa vazio).
-    command: sh -c "npx --yes prisma@5.22.0 generate && npx --yes prisma@5.22.0 migrate deploy && node dist/main.js"
+    # Gera client + aplica migrations + garante o admin (seed idempotente) antes de subir.
+    command: sh -c "npx --yes prisma@5.22.0 generate && npx --yes prisma@5.22.0 migrate deploy && node prisma/seed.cjs && node dist/main.js"
     depends_on:
       postgres:
         condition: service_healthy

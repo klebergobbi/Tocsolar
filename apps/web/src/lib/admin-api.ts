@@ -1,0 +1,135 @@
+// Cliente da API administrativa (auth + recursos protegidos).
+// Token JWT guardado no localStorage (MVP). Trade-off: simples, porém suscetível a XSS —
+// mitigado pela CSP/sanitização; migrar p/ cookie httpOnly é melhoria futura.
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
+
+const TOKEN_KEY = "tocsolar_admin_token";
+const USER_KEY = "tocsolar_admin_user";
+
+export type AdminUser = {
+  id: string;
+  nome: string;
+  email: string;
+  role: string;
+};
+
+export type Client = {
+  id: string;
+  nome: string;
+  whatsapp: string;
+  email: string | null;
+  documento: string | null;
+  cidade: string | null;
+  endereco: string | null;
+  tipo: "residencial" | "empresarial" | "rural";
+  status: "novo" | "em_contato" | "proposta" | "fechado" | "perdido";
+  valorConta: number | null;
+  observacoes: string | null;
+  leadId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const CLIENT_STATUS: { value: Client["status"]; label: string }[] = [
+  { value: "novo", label: "Novo" },
+  { value: "em_contato", label: "Em contato" },
+  { value: "proposta", label: "Proposta" },
+  { value: "fechado", label: "Fechado" },
+  { value: "perdido", label: "Perdido" },
+];
+
+export function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredUser(): AdminUser | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.localStorage.getItem(USER_KEY);
+  try {
+    return raw ? (JSON.parse(raw) as AdminUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setSession(token: string, user: AdminUser): void {
+  window.localStorage.setItem(TOKEN_KEY, token);
+  window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
+export function clearSession(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(TOKEN_KEY);
+  window.localStorage.removeItem(USER_KEY);
+}
+
+export async function login(email: string, senha: string): Promise<AdminUser> {
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, senha }),
+  });
+  if (!res.ok) {
+    throw new Error(
+      res.status === 401 ? "E-mail ou senha inválidos" : "Erro ao entrar",
+    );
+  }
+  const data = (await res.json()) as { token: string; user: AdminUser };
+  setSession(data.token, data.user);
+  return data.user;
+}
+
+// fetch autenticado; em 401 limpa sessão e manda para o login.
+export async function authFetch(
+  path: string,
+  init: RequestInit = {},
+): Promise<Response> {
+  const token = getToken();
+  const headers = new Headers(init.headers);
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+  if (init.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+  const res = await fetch(`${API_URL}${path}`, { ...init, headers });
+  if (res.status === 401 && typeof window !== "undefined") {
+    clearSession();
+    window.location.href = "/admin/login";
+  }
+  return res;
+}
+
+async function json<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    throw new Error(`Falha na requisição (${res.status})`);
+  }
+  return (await res.json()) as T;
+}
+
+export const clientsApi = {
+  list: (params?: { status?: string; search?: string }) => {
+    const qs = new URLSearchParams();
+    if (params?.status) qs.set("status", params.status);
+    if (params?.search) qs.set("search", params.search);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return authFetch(`/clients${suffix}`).then((r) => json<Client[]>(r));
+  },
+  get: (id: string) => authFetch(`/clients/${id}`).then((r) => json<Client>(r)),
+  create: (data: Partial<Client>) =>
+    authFetch(`/clients`, { method: "POST", body: JSON.stringify(data) }).then(
+      (r) => json<Client>(r),
+    ),
+  update: (id: string, data: Partial<Client>) =>
+    authFetch(`/clients/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }).then((r) => json<Client>(r)),
+  remove: (id: string) =>
+    authFetch(`/clients/${id}`, { method: "DELETE" }).then((r) =>
+      json<{ ok: boolean }>(r),
+    ),
+};

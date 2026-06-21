@@ -11,7 +11,7 @@ async function bootstrap(): Promise<void> {
   // CORS restrito ao domínio do site.
   app.enableCors({
     origin: process.env.CORS_ORIGIN ?? "http://localhost:3000",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   });
 
   // Validação server-side de todo input (whitelist + transform).
