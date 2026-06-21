@@ -29,6 +29,12 @@ export class EvolutionService {
   }
 
   async notifyLead(lead: LeadNotificationData): Promise<void> {
+    await this.sendText(this.buildMessage(lead), `(lead ${lead.id})`);
+  }
+
+  // Envio genérico ao WhatsApp do escritório (LEAD_NOTIFY_WHATSAPP).
+  // Retorna true se enviou; false se não configurado (degrada com warn).
+  async sendText(text: string, ref = ""): Promise<boolean> {
     const baseUrl = this.config.get<string>("EVOLUTION_API_URL");
     const apiKey = this.config.get<string>("EVOLUTION_API_KEY");
     const instance = this.config.get<string>("EVOLUTION_INSTANCE");
@@ -38,17 +44,14 @@ export class EvolutionService {
       this.logger.warn(
         "Evolution API não configurada — pulando notificação WhatsApp",
       );
-      return;
+      return false;
     }
 
     const url = `${baseUrl.replace(/\/$/, "")}/message/sendText/${instance}`;
     const res = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: apiKey,
-      },
-      body: JSON.stringify({ number: to, text: this.buildMessage(lead) }),
+      headers: { "Content-Type": "application/json", apikey: apiKey },
+      body: JSON.stringify({ number: to, text }),
     });
 
     if (!res.ok) {
@@ -56,6 +59,7 @@ export class EvolutionService {
       throw new Error(`Evolution API ${res.status}: ${body}`);
     }
 
-    this.logger.log(`Notificação WhatsApp enviada para o comercial (lead ${lead.id})`);
+    this.logger.log(`Notificação WhatsApp enviada ${ref}`.trim());
+    return true;
   }
 }

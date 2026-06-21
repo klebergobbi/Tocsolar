@@ -9,6 +9,7 @@ import {
   isOverdue,
   RECEIVABLE_STATUS,
   receivablesApi,
+  remindersApi,
   type Receivable,
   type ReceivableStatus,
 } from "@/lib/admin-api";
@@ -17,6 +18,8 @@ export default function RecebiveisPage() {
   const [items, setItems] = useState<Receivable[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("");
+  const [notificando, setNotificando] = useState(false);
+  const [notifMsg, setNotifMsg] = useState<string | null>(null);
 
   const load = useCallback(() => {
     setErro(null);
@@ -67,14 +70,54 @@ export default function RecebiveisPage() {
     }
   }
 
+  async function notificar(): Promise<void> {
+    setNotificando(true);
+    setNotifMsg(null);
+    try {
+      const r = await remindersApi.run();
+      if (!r.enviado) {
+        setNotifMsg(r.motivo ?? "Nada a notificar no momento.");
+      } else {
+        const canais = [r.whatsapp && "WhatsApp", r.email && "e-mail"]
+          .filter(Boolean)
+          .join(" + ");
+        setNotifMsg(
+          `Resumo enviado${canais ? ` por ${canais}` : " (canais não configurados)"}: ` +
+            `${r.vencidas} vencida(s), ${r.aVencer} a vencer.`,
+        );
+      }
+    } catch (e) {
+      setNotifMsg(e instanceof Error ? e.message : "Erro ao notificar");
+    } finally {
+      setNotificando(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Financeiro</h1>
-        <p className="text-sm text-brand-black/60">
-          Parcelas geradas dos orçamentos e lançamentos manuais.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Financeiro</h1>
+          <p className="text-sm text-brand-black/60">
+            Parcelas geradas dos orçamentos e lançamentos manuais.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={notificar}
+          disabled={notificando}
+          className="rounded-lg border border-brand-black/15 px-4 py-2 text-sm font-medium hover:bg-brand-black/5 disabled:opacity-60"
+          title="Envia ao escritório um resumo de parcelas vencidas e a vencer (3 dias)"
+        >
+          {notificando ? "Enviando…" : "Notificar vencimentos"}
+        </button>
       </div>
+
+      {notifMsg && (
+        <p className="rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          {notifMsg}
+        </p>
+      )}
 
       <FinanceTabs />
 

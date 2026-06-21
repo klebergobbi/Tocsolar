@@ -458,6 +458,26 @@ export const dashboardApi = {
   get: () => authFetch(`/dashboard`).then((r) => json<Dashboard>(r)),
 };
 
+// ===== Lembretes de vencimento (notificações) =====
+
+export type ReminderResult = {
+  enviado: boolean;
+  whatsapp?: boolean;
+  email?: boolean;
+  vencidas: number;
+  aVencer: number;
+  totalVencido?: number;
+  totalAVencer?: number;
+  motivo?: string;
+};
+
+export const remindersApi = {
+  run: () =>
+    authFetch(`/reminders/run`, { method: "POST" }).then((r) =>
+      json<ReminderResult>(r),
+    ),
+};
+
 // ===== Usuários / perfis =====
 
 export type Role = "admin" | "comercial";

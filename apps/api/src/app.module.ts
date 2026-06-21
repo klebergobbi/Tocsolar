@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { BullModule } from "@nestjs/bullmq";
+import { ScheduleModule } from "@nestjs/schedule";
 import { AppController } from "./app.controller";
 import { PrismaModule } from "./prisma/prisma.module";
 import { LeadsModule } from "./leads/leads.module";
@@ -12,10 +13,12 @@ import { ReceivablesModule } from "./receivables/receivables.module";
 import { ExpensesModule } from "./expenses/expenses.module";
 import { CashflowModule } from "./cashflow/cashflow.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
+import { RemindersModule } from "./reminders/reminders.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -36,6 +39,7 @@ import { DashboardModule } from "./dashboard/dashboard.module";
     ExpensesModule,
     CashflowModule,
     DashboardModule,
+    RemindersModule,
   ],
   controllers: [AppController],
 })

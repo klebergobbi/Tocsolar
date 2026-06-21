@@ -62,4 +62,21 @@ export class MailService {
 
     this.logger.log(`E-mail de notificação enviado (lead ${lead.id})`);
   }
+
+  // Envio genérico de e-mail interno ao escritório (LEAD_NOTIFY_EMAIL).
+  // Retorna true se enviou; false se não configurado (degrada com warn).
+  async sendInternal(subject: string, html: string): Promise<boolean> {
+    const transporter = this.getTransporter();
+    const to = this.config.get<string>("LEAD_NOTIFY_EMAIL");
+    const from = this.config.get<string>("SMTP_FROM");
+
+    if (!transporter || !to || !from) {
+      this.logger.warn("SMTP não configurado — pulando e-mail interno");
+      return false;
+    }
+
+    await transporter.sendMail({ from, to, subject, html });
+    this.logger.log(`E-mail interno enviado: ${subject}`);
+    return true;
+  }
 }

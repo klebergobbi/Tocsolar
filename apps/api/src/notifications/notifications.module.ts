@@ -18,7 +18,7 @@ import { MailService } from "./mail.service";
     }),
   ],
   providers: [NotificationsProcessor, EvolutionService, MailService],
-  // Reexporta BullModule para quem importar este módulo poder injetar a fila.
-  exports: [BullModule],
+  // Reexporta BullModule (fila) + services de envio (reusados nos lembretes).
+  exports: [BullModule, EvolutionService, MailService],
 })
 export class NotificationsModule {}
