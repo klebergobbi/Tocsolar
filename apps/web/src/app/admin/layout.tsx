@@ -13,6 +13,7 @@ import {
 const NAV = [
   { href: "/admin", label: "Painel", exact: true },
   { href: "/admin/clientes", label: "Clientes", exact: false },
+  { href: "/admin/orcamentos", label: "Orçamentos", exact: false },
 ];
 
 export default function AdminLayout({
@@ -23,6 +24,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const isLogin = pathname === "/admin/login";
+  const isPrint = pathname?.endsWith("/imprimir") ?? false;
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<AdminUser | null>(null);
 
@@ -54,6 +56,11 @@ export default function AdminLayout({
         Carregando…
       </div>
     );
+  }
+
+  // Rota de impressão: sem sidebar/topbar (PDF limpo via window.print()).
+  if (isPrint) {
+    return <main className="min-h-screen bg-white">{children}</main>;
   }
 
   function logout(): void {

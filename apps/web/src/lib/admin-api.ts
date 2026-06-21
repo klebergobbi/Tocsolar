@@ -133,3 +133,94 @@ export const clientsApi = {
       json<{ ok: boolean }>(r),
     ),
 };
+
+// ===== Orçamentos =====
+
+export type QuoteStatus = "rascunho" | "enviado" | "aprovado" | "recusado";
+
+export const QUOTE_STATUS: { value: QuoteStatus; label: string }[] = [
+  { value: "rascunho", label: "Rascunho" },
+  { value: "enviado", label: "Enviado" },
+  { value: "aprovado", label: "Aprovado" },
+  { value: "recusado", label: "Recusado" },
+];
+
+export type QuoteItem = {
+  id: string;
+  descricao: string;
+  quantidade: number;
+  valorUnit: number;
+  ordem: number;
+};
+
+export type QuoteItemInput = {
+  descricao: string;
+  quantidade: number;
+  valorUnit: number;
+};
+
+export type QuoteListItem = {
+  id: string;
+  numero: number;
+  status: QuoteStatus;
+  total: number;
+  createdAt: string;
+  client: { id: string; nome: string };
+  _count: { items: number };
+};
+
+export type Quote = {
+  id: string;
+  numero: number;
+  clientId: string;
+  status: QuoteStatus;
+  systemKwp: number | null;
+  validadeDias: number;
+  desconto: number;
+  total: number;
+  observacoes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  client: Client;
+  items: QuoteItem[];
+};
+
+export type QuoteInput = {
+  clientId: string;
+  systemKwp?: number;
+  validadeDias?: number;
+  desconto?: number;
+  observacoes?: string;
+  items: QuoteItemInput[];
+};
+
+export const quotesApi = {
+  list: (clientId?: string) => {
+    const suffix = clientId ? `?clientId=${encodeURIComponent(clientId)}` : "";
+    return authFetch(`/quotes${suffix}`).then((r) => json<QuoteListItem[]>(r));
+  },
+  get: (id: string) => authFetch(`/quotes/${id}`).then((r) => json<Quote>(r)),
+  create: (data: QuoteInput) =>
+    authFetch(`/quotes`, { method: "POST", body: JSON.stringify(data) }).then(
+      (r) => json<Quote>(r),
+    ),
+  update: (
+    id: string,
+    data: Partial<Omit<QuoteInput, "clientId">> & { status?: QuoteStatus },
+  ) =>
+    authFetch(`/quotes/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }).then((r) => json<Quote>(r)),
+  remove: (id: string) =>
+    authFetch(`/quotes/${id}`, { method: "DELETE" }).then((r) =>
+      json<{ ok: boolean }>(r),
+    ),
+};
+
+export function formatBRL(value: number): string {
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}

@@ -57,9 +57,42 @@ model Client {
   // Origem opcional: lead que deu origem ao cliente (1:1).
   leadId      String?  @unique
   lead        Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  quotes      Quote[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([status])
   @@index([createdAt])
+}
+
+// Orçamento de um cliente. Número sequencial atribuído no service (escopo pequeno).
+model Quote {
+  id           String      @id @default(uuid())
+  numero       Int         @unique
+  clientId     String
+  client       Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  status       String      @default("rascunho") // rascunho | enviado | aprovado | recusado
+  systemKwp    Float? // potência do sistema (kWp)
+  validadeDias Int         @default(15)
+  desconto     Float       @default(0) // R$ de desconto sobre o subtotal
+  total        Float       @default(0) // subtotal dos itens - desconto (persistido)
+  observacoes  String?
+  items        QuoteItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([clientId])
+  @@index([status])
+}
+
+model QuoteItem {
+  id         String @id @default(uuid())
+  quoteId    String
+  quote      Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  descricao  String
+  quantidade Float  @default(1)
+  valorUnit  Float  @default(0) // R$ por unidade
+  ordem      Int    @default(0)
+
+  @@index([quoteId])
 }
