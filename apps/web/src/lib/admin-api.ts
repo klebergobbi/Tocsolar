@@ -428,3 +428,32 @@ export type Cashflow = {
 export const cashflowApi = {
   get: () => authFetch(`/cashflow`).then((r) => json<Cashflow>(r)),
 };
+
+// ===== Dashboard (visão executiva) =====
+
+export type Dashboard = {
+  funil: {
+    leads: number;
+    clientes: number;
+    orcamentos: number;
+    orcamentosAprovados: number;
+    clientesFechados: number;
+    convLeadCliente: number;
+    convOrcamentoAprovado: number;
+  };
+  clientesPorStatus: Record<string, number>;
+  orcamentosPorStatus: Record<string, number>;
+  financeiro: Cashflow["totais"];
+  receitaMensal: { mes: string; entradas: number; saidas: number }[];
+  proximosVencimentos: {
+    id: string;
+    descricao: string;
+    cliente: string;
+    valor: number;
+    vencimento: string;
+  }[];
+};
+
+export const dashboardApi = {
+  get: () => authFetch(`/dashboard`).then((r) => json<Dashboard>(r)),
+};
