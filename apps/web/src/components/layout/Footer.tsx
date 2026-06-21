@@ -11,8 +11,6 @@ const FOOTER_LINKS = [
 ];
 
 export function Footer() {
-  const year = 2026; // <<CONFIRMAR>> manter estático evita mismatch SSR/CSR
-
   return (
     <footer className="mt-24 border-t border-brand-black/10 bg-brand-black text-white/80">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-3">
@@ -77,7 +75,15 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10 px-6 py-6 text-center text-xs text-white/50">
-        © {year} TOCSOLAR Energia Solar. Todos os direitos reservados.
+        Desenvolvido por{" "}
+        <a
+          href="https://www.lumentechsolutions.com.br"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-white/70 hover:text-white"
+        >
+          Lumentech Solutions
+        </a>
       </div>
     </footer>
   );
