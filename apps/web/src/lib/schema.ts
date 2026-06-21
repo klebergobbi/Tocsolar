@@ -18,12 +18,17 @@ export const FAQ_ITEMS: { pergunta: string; resposta: string }[] = [
   {
     pergunta: "Quanto custa instalar energia solar?",
     resposta:
-      "Depende do seu consumo: quanto maior a conta, maior o sistema. Use o simulador para uma estimativa e peça um orçamento gratuito — confirmamos os valores no local, sem compromisso.",
+      "O investimento depende do seu consumo (quanto maior a conta, maior o sistema), do tipo de telhado e do padrão de ligação. Por isso não trabalhamos com preço de tabela: use o simulador para uma estimativa na hora e peça um orçamento gratuito — confirmamos tudo no local, sem compromisso.",
   },
   {
     pergunta: "Em quanto tempo o investimento se paga?",
     resposta:
-      "O retorno (payback) varia conforme consumo e tarifa. Trabalhamos com estimativas conservadoras no orçamento, justamente para não prometer um retorno que não se confirma.",
+      "Um sistema bem dimensionado costuma se pagar em poucos anos e tem vida útil acima de 25 anos — ou seja, segue gerando economia muito depois de se pagar. O retorno (payback) varia conforme consumo e tarifa, e no orçamento usamos estimativas conservadoras de propósito, para você não contar com um retorno que não se confirma.",
+  },
+  {
+    pergunta: "Quanto a conta de luz pode cair?",
+    resposta:
+      "Com o sistema dimensionado para o seu consumo, a redução costuma alcançar a maior parte da conta — em muitos projetos, acima de 80%. Sempre permanece a taxa mínima de disponibilidade cobrada pela distribuidora. No orçamento mostramos a estimativa para o seu caso, sem prometer demais.",
   },
   {
     pergunta: "Vocês cuidam da homologação na Enel?",

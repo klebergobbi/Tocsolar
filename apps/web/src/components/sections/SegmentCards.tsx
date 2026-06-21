@@ -3,27 +3,39 @@ import Link from "next/link";
 const SEGMENTOS = [
   {
     href: "/energia-solar-residencial",
-    titulo: "Para sua casa",
+    titulo: "Energia solar residencial",
     descricao:
-      "Reduza a conta de luz da sua residência e proteja seu orçamento dos reajustes anuais.",
+      "Para sua casa. Gere a própria energia, reduza boa parte da conta de luz e blinde seu orçamento dos reajustes anuais da Enel.",
     bullets: [
-      "Economia na conta todo mês",
+      "Economia na conta já no primeiro mês",
       "Valorização do imóvel",
-      "Instalação rápida e limpa",
+      "Instalação limpa, sem quebra-quebra",
     ],
-    cta: "Energia solar residencial",
+    cta: "Ver solução residencial",
   },
   {
     href: "/energia-solar-empresarial",
-    titulo: "Para sua empresa",
+    titulo: "Energia solar empresarial",
     descricao:
-      "Corte um dos maiores custos fixos do seu negócio e ganhe previsibilidade financeira.",
+      "Para comércios e indústrias. Corte um dos maiores custos fixos do negócio e transforme energia em previsibilidade financeira.",
     bullets: [
-      "Redução de custo operacional",
+      "Redução do custo operacional",
       "Retorno previsível do investimento",
-      "Imagem sustentável para o negócio",
+      "Marca mais sustentável aos olhos do cliente",
     ],
-    cta: "Energia solar empresarial",
+    cta: "Ver solução empresarial",
+  },
+  {
+    href: "/contato",
+    titulo: "Energia solar rural e agro",
+    descricao:
+      "Para sítios, fazendas e o agronegócio. Reduza o custo de irrigação, resfriamento e produção mesmo em áreas afastadas da rede.",
+    bullets: [
+      "Menos custo na operação no campo",
+      "Sistema dimensionado para alto consumo",
+      "Projeto e homologação por conta da TOCSOLAR",
+    ],
+    cta: "Falar sobre projeto rural",
   },
 ];
 
@@ -39,7 +51,7 @@ export function SegmentCards() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {SEGMENTOS.map((seg) => (
           <Link
             key={seg.href}
