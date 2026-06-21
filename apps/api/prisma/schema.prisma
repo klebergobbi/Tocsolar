@@ -58,6 +58,7 @@ model Client {
   leadId      String?  @unique
   lead        Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
   quotes      Quote[]
+  receivables Receivable[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -78,6 +79,7 @@ model Quote {
   total        Float       @default(0) // subtotal dos itens - desconto (persistido)
   observacoes  String?
   items        QuoteItem[]
+  receivables  Receivable[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -95,4 +97,30 @@ model QuoteItem {
   ordem      Int    @default(0)
 
   @@index([quoteId])
+}
+
+// Conta a receber (parcela). Gerada de um orçamento aprovado ou lançada à mão.
+// "vencido" não é status persistido: derivado de (status=pendente && vencimento < hoje).
+model Receivable {
+  id             String    @id @default(uuid())
+  clientId       String
+  client         Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  quoteId        String?
+  quote          Quote?    @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  descricao      String // ex.: "Parcela 1/12"
+  parcela        Int       @default(1)
+  totalParcelas  Int       @default(1)
+  valor          Float
+  vencimento     DateTime
+  status         String    @default("pendente") // pendente | pago | cancelado
+  pagoEm         DateTime?
+  formaPagamento String?
+  observacoes    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([clientId])
+  @@index([quoteId])
+  @@index([status])
+  @@index([vencimento])
 }

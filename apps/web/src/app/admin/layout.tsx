@@ -14,6 +14,7 @@ const NAV = [
   { href: "/admin", label: "Painel", exact: true },
   { href: "/admin/clientes", label: "Clientes", exact: false },
   { href: "/admin/orcamentos", label: "Orçamentos", exact: false },
+  { href: "/admin/financeiro/recebiveis", label: "Financeiro", exact: false },
 ];
 
 export default function AdminLayout({

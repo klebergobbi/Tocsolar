@@ -218,9 +218,89 @@ export const quotesApi = {
     ),
 };
 
+// ===== Recebíveis (financeiro — contas a receber) =====
+
+export type ReceivableStatus = "pendente" | "pago" | "cancelado";
+
+export const RECEIVABLE_STATUS: { value: ReceivableStatus; label: string }[] = [
+  { value: "pendente", label: "Pendente" },
+  { value: "pago", label: "Pago" },
+  { value: "cancelado", label: "Cancelado" },
+];
+
+export type Receivable = {
+  id: string;
+  clientId: string;
+  quoteId: string | null;
+  descricao: string;
+  parcela: number;
+  totalParcelas: number;
+  valor: number;
+  vencimento: string;
+  status: ReceivableStatus;
+  pagoEm: string | null;
+  formaPagamento: string | null;
+  observacoes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  client: { id: string; nome: string };
+  quote: { id: string; numero: number } | null;
+};
+
+export type GenerateReceivablesInput = {
+  parcelas: number;
+  primeiroVencimento: string;
+  formaPagamento?: string;
+};
+
+export const receivablesApi = {
+  list: (params?: { status?: string; clientId?: string }) => {
+    const qs = new URLSearchParams();
+    if (params?.status) qs.set("status", params.status);
+    if (params?.clientId) qs.set("clientId", params.clientId);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return authFetch(`/receivables${suffix}`).then((r) => json<Receivable[]>(r));
+  },
+  update: (
+    id: string,
+    data: Partial<{
+      descricao: string;
+      valor: number;
+      vencimento: string;
+      status: ReceivableStatus;
+      pagoEm: string | null;
+      formaPagamento: string;
+      observacoes: string;
+    }>,
+  ) =>
+    authFetch(`/receivables/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }).then((r) => json<Receivable>(r)),
+  remove: (id: string) =>
+    authFetch(`/receivables/${id}`, { method: "DELETE" }).then((r) =>
+      json<{ ok: boolean }>(r),
+    ),
+  generateFromQuote: (quoteId: string, data: GenerateReceivablesInput) =>
+    authFetch(`/receivables/generate-from-quote/${quoteId}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }).then((r) => json<Receivable[]>(r)),
+};
+
+// vencido = pendente e já passou do vencimento (derivado, não persistido).
+export function isOverdue(r: Receivable): boolean {
+  if (r.status !== "pendente") return false;
+  return new Date(r.vencimento).getTime() < Date.now();
+}
+
 export function formatBRL(value: number): string {
   return value.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
+}
+
+export function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }

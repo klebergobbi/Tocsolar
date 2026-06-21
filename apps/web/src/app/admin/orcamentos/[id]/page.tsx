@@ -8,6 +8,7 @@ import {
   formatBRL,
   QUOTE_STATUS,
   quotesApi,
+  receivablesApi,
   type Quote,
   type QuoteInput,
   type QuoteStatus,
@@ -21,6 +22,12 @@ export default function OrcamentoDetailPage() {
   const [erro, setErro] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editando, setEditando] = useState(false);
+  const [showParcelas, setShowParcelas] = useState(false);
+  const [parcelas, setParcelas] = useState("12");
+  const [primeiroVenc, setPrimeiroVenc] = useState("");
+  const [formaPgto, setFormaPgto] = useState("");
+  const [gerando, setGerando] = useState(false);
+  const [parcelasMsg, setParcelasMsg] = useState<string | null>(null);
 
   function carregar(): void {
     quotesApi
@@ -74,6 +81,25 @@ export default function OrcamentoDetailPage() {
     }
   }
 
+  async function gerarParcelas(e: React.FormEvent): Promise<void> {
+    e.preventDefault();
+    setGerando(true);
+    setParcelasMsg(null);
+    try {
+      const result = await receivablesApi.generateFromQuote(id, {
+        parcelas: Number(parcelas) || 1,
+        primeiroVencimento: primeiroVenc,
+        formaPagamento: formaPgto.trim() || undefined,
+      });
+      setParcelasMsg(`${result.length} parcela(s) gerada(s) no financeiro.`);
+      setShowParcelas(false);
+    } catch (err) {
+      setParcelasMsg(err instanceof Error ? err.message : "Erro ao gerar parcelas");
+    } finally {
+      setGerando(false);
+    }
+  }
+
   if (erro && !quote) {
     return <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{erro}</p>;
   }
@@ -111,6 +137,13 @@ export default function OrcamentoDetailPage() {
             </Link>
             <button
               type="button"
+              onClick={() => setShowParcelas((v) => !v)}
+              className="rounded-lg border border-brand-black/15 px-3 py-1.5 text-sm font-medium hover:bg-brand-black/5"
+            >
+              Gerar parcelas
+            </button>
+            <button
+              type="button"
               onClick={() => setEditando((v) => !v)}
               className="rounded-lg border border-brand-black/15 px-3 py-1.5 text-sm font-medium hover:bg-brand-black/5"
             >
@@ -129,6 +162,64 @@ export default function OrcamentoDetailPage() {
 
       {erro && (
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{erro}</p>
+      )}
+
+      {parcelasMsg && (
+        <p className="flex items-center justify-between gap-3 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+          <span>{parcelasMsg}</span>
+          <Link href="/admin/financeiro/recebiveis" className="font-semibold underline">
+            Ver no financeiro
+          </Link>
+        </p>
+      )}
+
+      {showParcelas && (
+        <form
+          onSubmit={gerarParcelas}
+          className="grid items-end gap-3 rounded-2xl border border-brand-black/10 bg-white p-5 sm:grid-cols-4"
+        >
+          <div className="sm:col-span-4 text-sm text-brand-black/60">
+            Gera parcelas mensais a partir do total{" "}
+            <strong>{formatBRL(quote.total)}</strong> deste orçamento.
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Nº de parcelas</label>
+            <input
+              type="number"
+              min="1"
+              max="120"
+              value={parcelas}
+              onChange={(e) => setParcelas(e.target.value)}
+              className="w-full rounded-lg border border-brand-black/15 px-3 py-2 text-sm outline-none focus:border-brand-orange"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">1º vencimento</label>
+            <input
+              type="date"
+              required
+              value={primeiroVenc}
+              onChange={(e) => setPrimeiroVenc(e.target.value)}
+              className="w-full rounded-lg border border-brand-black/15 px-3 py-2 text-sm outline-none focus:border-brand-orange"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Forma de pagamento</label>
+            <input
+              placeholder="Boleto, cartão…"
+              value={formaPgto}
+              onChange={(e) => setFormaPgto(e.target.value)}
+              className="w-full rounded-lg border border-brand-black/15 px-3 py-2 text-sm outline-none focus:border-brand-orange"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={gerando || !primeiroVenc}
+            className="rounded-lg bg-brand-orange px-5 py-2 text-sm font-semibold text-brand-black transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            {gerando ? "Gerando…" : "Gerar"}
+          </button>
+        </form>
       )}
 
       {editando ? (

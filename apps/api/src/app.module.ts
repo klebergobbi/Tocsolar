@@ -7,6 +7,7 @@ import { LeadsModule } from "./leads/leads.module";
 import { AuthModule } from "./auth/auth.module";
 import { ClientsModule } from "./clients/clients.module";
 import { QuotesModule } from "./quotes/quotes.module";
+import { ReceivablesModule } from "./receivables/receivables.module";
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { QuotesModule } from "./quotes/quotes.module";
     AuthModule,
     ClientsModule,
     QuotesModule,
+    ReceivablesModule,
   ],
   controllers: [AppController],
 })
