@@ -496,7 +496,9 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Financeiro · Recebíveis (Fase 3a — EM PRODUÇÃO):\*\* `ReceivablesModule` — CRUD `/api/receivables` + `POST /api/receivables/generate-from-quote/:quoteId` (divide o total do orçamento em N parcelas mensais; resto na última; datas ancoradas em 12:00 UTC p/ não pular dia). Modelo `Receivable` (migration `add_receivables`). "Vencido" é \*\*derivado\*\* (pendente && vencimento < hoje), não persistido. Web: `/admin/financeiro/recebiveis` (resumo a receber/vencido/recebido, filtro, dar baixa/reabrir, excluir) + botão "Gerar parcelas" no detalhe do orçamento.
 
-\- \*\*Roadmap:\*\* ✅ Fase 1 (auth + CRM) · ✅ Fase 2 (orçamentos) · ✅ Fase 3a (recebíveis/parcelas). \*\*Fase 3b = Custos/despesas\*\* · Fase 3c = Fluxo de caixa. Fase 4 = Dashboard/relatórios.
+\- \*\*Financeiro · Despesas (Fase 3b — EM PRODUÇÃO):\*\* `ExpensesModule` — CRUD `/api/expenses` (filtros categoria/status/data; categorias: equipamento, mao_de_obra, operacional, marketing, imposto, outro; status pago/pendente; `pagoEm` = data quando pago — regime de caixa; vínculo opcional a `Quote`). Modelo `Expense` (migration `add_expenses`). Web: `/admin/financeiro/despesas` (resumo pago/pendente, criar, filtros, baixa, excluir) + `FinanceTabs` (Contas a receber | Despesas).
+
+\- \*\*Roadmap:\*\* ✅ Fase 1 · ✅ Fase 2 · ✅ Fase 3a (recebíveis) · ✅ Fase 3b (despesas). \*\*Fase 3c = Fluxo de caixa\*\* (entradas recebidas − saídas pagas por período). Fase 4 = Dashboard/relatórios.
 
 
 
