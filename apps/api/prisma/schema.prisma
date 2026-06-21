@@ -80,6 +80,7 @@ model Quote {
   observacoes  String?
   items        QuoteItem[]
   receivables  Receivable[]
+  expenses     Expense[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -123,4 +124,26 @@ model Receivable {
   @@index([quoteId])
   @@index([status])
   @@index([vencimento])
+}
+
+// Despesa / custo de saída. Pode ser vinculada a um projeto (orçamento) ou geral.
+model Expense {
+  id             String    @id @default(uuid())
+  descricao      String
+  categoria      String // equipamento | mao_de_obra | operacional | marketing | imposto | outro
+  valor          Float
+  data           DateTime // competência / data da despesa
+  status         String    @default("pago") // pago | pendente
+  pagoEm         DateTime?
+  fornecedor     String?
+  formaPagamento String?
+  quoteId        String? // vínculo opcional a um projeto/orçamento
+  quote          Quote?    @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  observacoes    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([categoria])
+  @@index([status])
+  @@index([data])
 }

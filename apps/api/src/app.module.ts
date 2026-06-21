@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ClientsModule } from "./clients/clients.module";
 import { QuotesModule } from "./quotes/quotes.module";
 import { ReceivablesModule } from "./receivables/receivables.module";
+import { ExpensesModule } from "./expenses/expenses.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ReceivablesModule } from "./receivables/receivables.module";
     ClientsModule,
     QuotesModule,
     ReceivablesModule,
+    ExpensesModule,
   ],
   controllers: [AppController],
 })

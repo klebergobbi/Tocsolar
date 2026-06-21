@@ -288,6 +288,90 @@ export const receivablesApi = {
     }).then((r) => json<Receivable[]>(r)),
 };
 
+// ===== Despesas (financeiro — contas a pagar / custos) =====
+
+export type ExpenseCategoria =
+  | "equipamento"
+  | "mao_de_obra"
+  | "operacional"
+  | "marketing"
+  | "imposto"
+  | "outro";
+
+export type ExpenseStatus = "pago" | "pendente";
+
+export const EXPENSE_CATEGORIES: { value: ExpenseCategoria; label: string }[] = [
+  { value: "equipamento", label: "Equipamento" },
+  { value: "mao_de_obra", label: "Mão de obra" },
+  { value: "operacional", label: "Operacional" },
+  { value: "marketing", label: "Marketing" },
+  { value: "imposto", label: "Impostos/Taxas" },
+  { value: "outro", label: "Outro" },
+];
+
+export const EXPENSE_CATEGORY_LABEL: Record<ExpenseCategoria, string> =
+  Object.fromEntries(
+    EXPENSE_CATEGORIES.map((c) => [c.value, c.label]),
+  ) as Record<ExpenseCategoria, string>;
+
+export type Expense = {
+  id: string;
+  descricao: string;
+  categoria: ExpenseCategoria;
+  valor: number;
+  data: string;
+  status: ExpenseStatus;
+  pagoEm: string | null;
+  fornecedor: string | null;
+  formaPagamento: string | null;
+  quoteId: string | null;
+  observacoes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  quote: { id: string; numero: number } | null;
+};
+
+export type ExpenseInput = {
+  descricao: string;
+  categoria: ExpenseCategoria;
+  valor: number;
+  data: string;
+  status?: ExpenseStatus;
+  fornecedor?: string;
+  formaPagamento?: string;
+  observacoes?: string;
+};
+
+export const expensesApi = {
+  list: (params?: {
+    categoria?: string;
+    status?: string;
+    from?: string;
+    to?: string;
+  }) => {
+    const qs = new URLSearchParams();
+    if (params?.categoria) qs.set("categoria", params.categoria);
+    if (params?.status) qs.set("status", params.status);
+    if (params?.from) qs.set("from", params.from);
+    if (params?.to) qs.set("to", params.to);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return authFetch(`/expenses${suffix}`).then((r) => json<Expense[]>(r));
+  },
+  create: (data: ExpenseInput) =>
+    authFetch(`/expenses`, { method: "POST", body: JSON.stringify(data) }).then(
+      (r) => json<Expense>(r),
+    ),
+  update: (id: string, data: Partial<ExpenseInput> & { pagoEm?: string | null }) =>
+    authFetch(`/expenses/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }).then((r) => json<Expense>(r)),
+  remove: (id: string) =>
+    authFetch(`/expenses/${id}`, { method: "DELETE" }).then((r) =>
+      json<{ ok: boolean }>(r),
+    ),
+};
+
 // vencido = pendente e já passou do vencimento (derivado, não persistido).
 export function isOverdue(r: Receivable): boolean {
   if (r.status !== "pendente") return false;

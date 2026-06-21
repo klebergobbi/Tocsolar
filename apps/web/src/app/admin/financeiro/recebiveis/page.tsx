@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { FinanceTabs } from "@/components/admin/FinanceTabs";
 import {
   formatBRL,
   formatDate,
@@ -69,11 +70,13 @@ export default function RecebiveisPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Financeiro · Contas a receber</h1>
+        <h1 className="text-2xl font-bold">Financeiro</h1>
         <p className="text-sm text-brand-black/60">
           Parcelas geradas dos orçamentos e lançamentos manuais.
         </p>
       </div>
+
+      <FinanceTabs />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card label="A receber (pendente)" value={resumo.aReceber} tone="text-brand-black" />
