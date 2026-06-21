@@ -500,7 +500,9 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Financeiro · Fluxo de caixa (Fase 3c — EM PRODUÇÃO):\*\* `CashflowModule` — `GET /api/cashflow` agrega recebíveis (entradas) e despesas (saídas) por mês, em \*\*realizado\*\* (pagos, pela data de pagamento) e \*\*previsto\*\* (pendentes, por vencimento/competência), com saldo do mês e acumulado. Sem novo modelo (só agregação). Web: `/admin/financeiro/fluxo` (cards realizado/previsto + tabela mensal com acumulado).
 
-\- \*\*Roadmap:\*\* ✅ Fase 1 (auth+CRM) · ✅ Fase 2 (orçamentos) · ✅ \*\*Fase 3 Financeiro completo\*\* (3a recebíveis · 3b despesas · 3c fluxo de caixa). \*\*Fase 4 = Dashboard/relatórios\*\* (próxima).
+\- \*\*Dashboard executivo (Fase 4 — EM PRODUÇÃO):\*\* `DashboardModule` — `GET /api/dashboard` agrega funil (leads→clientes→orçamentos→aprovados) com taxas de conversão, status de clientes/orçamentos, KPIs financeiros (reusa `CashflowService`), receita mensal e próximos vencimentos. Web: `/admin` reescrito como painel (cards de funil com conversão, KPIs financeiros, gráfico CSS entradas×saídas, lista de próximos vencimentos).
+
+\- \*\*Status:\*\* ✅ \*\*Área administrativa completa\*\* — Fase 1 (auth+CRM) · Fase 2 (orçamentos) · Fase 3 (financeiro: recebíveis/despesas/fluxo) · Fase 4 (dashboard). Tudo validado end-to-end em produção. Próximos passos opcionais: perfis/permissões (admin/comercial), notificação de vencimentos, exportações (CSV), testar UI por clique.
 
 
 
