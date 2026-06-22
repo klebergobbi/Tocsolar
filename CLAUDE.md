@@ -460,7 +460,7 @@ pnpm lint
 
 
 
-\## 13. Status do projeto (atualizado em 2026-06-20)
+\## 13. Status do projeto (atualizado em 2026-06-21)
 
 
 
@@ -550,11 +550,15 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Rotacionar o token DO\*\* usado no provisionamento/deploy.
 
-\- Ambiente: arquivos de `node_modules` somem em `C:\\Projetos` (Defender/OneDrive). Fix: `pnpm install --force`. Excluir a pasta do antivírus/sync.
+\- \*\*Ambiente Windows hostil:\*\* em `C:\\Projetos` o OneDrive/Defender apaga `node_modules` \*\*e o `dist`/output de build\*\* em tempo real — o build local quebra de forma intermitente (`Cannot find module .../jest-worker`, `dist` vazio). Workaround: `pnpm install --force` e repetir o build (às vezes 2x). \*\*Não dá p/ rodar a API/web localmente de forma confiável\*\* → a validação real é o build do Docker (clean-room no droplet) + testes via curl contra produção. Ideal: excluir a pasta do antivírus/sync. \*\*Consequência:\*\* nenhuma UI do admin foi testada por clique — só por API.
 
 
 
 \### Próxima sessão sugerida
 
-Menu mobile no Header (hambúrguer) + validação responsiva, OU `/blog/[slug]` (MDX, SEO fundo de funil).
+\*\*Operacionalizar/validar\*\* o que já existe (prioridade): (1) configurar Evolution (WhatsApp) + SMTP no `.env.prod` do droplet → ativa notificações de lead e lembretes de vencimento (hoje só logam `warn`); (2) testar a UI do admin por clique (login, criar cliente→orçamento→PDF→parcelas→baixa→fluxo→export); (3) trocar a senha do admin (`RU7Vp0dGyME1`).
+
+\*\*Site público (pendências antigas):\*\* menu mobile no Header (hambúrguer) + validação responsiva; `/blog/[slug]` (MDX, SEO fundo de funil); HTTPS/domínio (TLS automático do Caddy); preencher `NEXT_PUBLIC_GTM_ID`.
+
+\*\*Admin (evoluções opcionais):\*\* migrar token p/ cookie httpOnly; relatórios/exportações extras.
 
