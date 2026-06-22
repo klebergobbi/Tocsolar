@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FinanceTabs } from "@/components/admin/FinanceTabs";
 import {
   cashflowApi,
+  downloadCsv,
   formatBRL,
   formatMonth,
   type Cashflow,
@@ -24,11 +25,24 @@ export default function FluxoCaixaPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Financeiro</h1>
-        <p className="text-sm text-brand-black/60">
-          Entradas (recebíveis) e saídas (despesas) por mês — realizado e previsto.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Financeiro</h1>
+          <p className="text-sm text-brand-black/60">
+            Entradas (recebíveis) e saídas (despesas) por mês — realizado e previsto.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() =>
+            downloadCsv("/exports/fluxo.csv", "fluxo-caixa.csv").catch((e) =>
+              setErro(e instanceof Error ? e.message : "Erro ao exportar"),
+            )
+          }
+          className="rounded-lg border border-brand-black/15 px-4 py-2 text-sm font-medium hover:bg-brand-black/5"
+        >
+          Exportar CSV
+        </button>
       </div>
 
       <FinanceTabs />

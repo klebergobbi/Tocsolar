@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FinanceTabs } from "@/components/admin/FinanceTabs";
 import {
+  downloadCsv,
   EXPENSE_CATEGORIES,
   EXPENSE_CATEGORY_LABEL,
   expensesApi,
@@ -114,13 +115,26 @@ export default function DespesasPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Financeiro</h1>
-        <button
-          type="button"
-          onClick={() => setShowForm((v) => !v)}
-          className="rounded-lg bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-black transition-opacity hover:opacity-90"
-        >
-          {showForm ? "Cancelar" : "Nova despesa"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              downloadCsv("/exports/despesas.csv", "despesas.csv").catch((e) =>
+                setErro(e instanceof Error ? e.message : "Erro ao exportar"),
+              )
+            }
+            className="rounded-lg border border-brand-black/15 px-4 py-2 text-sm font-medium hover:bg-brand-black/5"
+          >
+            Exportar CSV
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowForm((v) => !v)}
+            className="rounded-lg bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-black transition-opacity hover:opacity-90"
+          >
+            {showForm ? "Cancelar" : "Nova despesa"}
+          </button>
+        </div>
       </div>
 
       <FinanceTabs />

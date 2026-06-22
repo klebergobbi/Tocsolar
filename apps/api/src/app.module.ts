@@ -14,6 +14,7 @@ import { ExpensesModule } from "./expenses/expenses.module";
 import { CashflowModule } from "./cashflow/cashflow.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { RemindersModule } from "./reminders/reminders.module";
+import { ExportsModule } from "./exports/exports.module";
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { RemindersModule } from "./reminders/reminders.module";
     CashflowModule,
     DashboardModule,
     RemindersModule,
+    ExportsModule,
   ],
   controllers: [AppController],
 })

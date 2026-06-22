@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FinanceTabs } from "@/components/admin/FinanceTabs";
 import {
+  downloadCsv,
   formatBRL,
   formatDate,
   isOverdue,
@@ -75,16 +76,20 @@ export default function RecebiveisPage() {
     setNotifMsg(null);
     try {
       const r = await remindersApi.run();
-      if (!r.enviado) {
+      if (r.vencidas === 0 && r.aVencer === 0) {
         setNotifMsg(r.motivo ?? "Nada a notificar no momento.");
       } else {
-        const canais = [r.whatsapp && "WhatsApp", r.email && "e-mail"]
-          .filter(Boolean)
-          .join(" + ");
-        setNotifMsg(
-          `Resumo enviado${canais ? ` por ${canais}` : " (canais não configurados)"}: ` +
-            `${r.vencidas} vencida(s), ${r.aVencer} a vencer.`,
-        );
+        const resumo = `${r.vencidas} vencida(s), ${r.aVencer} a vencer`;
+        if (r.enviado) {
+          const canais = [r.whatsapp && "WhatsApp", r.email && "e-mail"]
+            .filter(Boolean)
+            .join(" + ");
+          setNotifMsg(`Resumo enviado por ${canais}: ${resumo}.`);
+        } else {
+          setNotifMsg(
+            `${resumo}. Envio não realizado — configure Evolution (WhatsApp) e/ou SMTP no servidor.`,
+          );
+        }
       }
     } catch (e) {
       setNotifMsg(e instanceof Error ? e.message : "Erro ao notificar");
@@ -102,15 +107,28 @@ export default function RecebiveisPage() {
             Parcelas geradas dos orçamentos e lançamentos manuais.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={notificar}
-          disabled={notificando}
-          className="rounded-lg border border-brand-black/15 px-4 py-2 text-sm font-medium hover:bg-brand-black/5 disabled:opacity-60"
-          title="Envia ao escritório um resumo de parcelas vencidas e a vencer (3 dias)"
-        >
-          {notificando ? "Enviando…" : "Notificar vencimentos"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              downloadCsv("/exports/recebiveis.csv", "recebiveis.csv").catch(
+                (e) => setErro(e instanceof Error ? e.message : "Erro ao exportar"),
+              )
+            }
+            className="rounded-lg border border-brand-black/15 px-4 py-2 text-sm font-medium hover:bg-brand-black/5"
+          >
+            Exportar CSV
+          </button>
+          <button
+            type="button"
+            onClick={notificar}
+            disabled={notificando}
+            className="rounded-lg border border-brand-black/15 px-4 py-2 text-sm font-medium hover:bg-brand-black/5 disabled:opacity-60"
+            title="Envia ao escritório um resumo de parcelas vencidas e a vencer (3 dias)"
+          >
+            {notificando ? "Enviando…" : "Notificar vencimentos"}
+          </button>
+        </div>
       </div>
 
       {notifMsg && (

@@ -478,6 +478,27 @@ export const remindersApi = {
     ),
 };
 
+// ===== Exportação CSV =====
+// Baixa via fetch autenticado (o header bearer não vai em <a href>) + blob.
+export async function downloadCsv(
+  path: string,
+  filename: string,
+): Promise<void> {
+  const res = await authFetch(path);
+  if (!res.ok) {
+    throw new Error("Erro ao exportar");
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 // ===== Usuários / perfis =====
 
 export type Role = "admin" | "comercial";

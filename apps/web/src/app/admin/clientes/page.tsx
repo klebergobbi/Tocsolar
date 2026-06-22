@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   CLIENT_STATUS,
   clientsApi,
+  downloadCsv,
   type Client,
 } from "@/lib/admin-api";
 
@@ -122,13 +123,26 @@ export default function AdminClientesPage() {
             {clients === null ? "Carregando…" : `${clients.length} cliente(s)`}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowForm((v) => !v)}
-          className="rounded-lg bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-black transition-opacity hover:opacity-90"
-        >
-          {showForm ? "Cancelar" : "Novo cliente"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              downloadCsv("/exports/clientes.csv", "clientes.csv").catch((e) =>
+                setErro(e instanceof Error ? e.message : "Erro ao exportar"),
+              )
+            }
+            className="rounded-lg border border-brand-black/15 px-4 py-2 text-sm font-medium hover:bg-brand-black/5"
+          >
+            Exportar CSV
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowForm((v) => !v)}
+            className="rounded-lg bg-brand-orange px-4 py-2 text-sm font-semibold text-brand-black transition-opacity hover:opacity-90"
+          >
+            {showForm ? "Cancelar" : "Novo cliente"}
+          </button>
+        </div>
       </div>
 
       {showForm && (
