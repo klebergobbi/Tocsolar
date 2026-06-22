@@ -504,7 +504,11 @@ Painel interno em `/admin` (dentro do app web; `SiteFrame` esconde o chrome de m
 
 \- \*\*Perfis/permissões + usuários (EM PRODUÇÃO):\*\* `RolesGuard` + `@Roles` — rotas financeiras (receivables/expenses/cashflow) e `/api/users` restritas a `admin`; dashboard omite financeiro p/ `comercial`. `UsersModule` (admin-only): CRUD `/api/users` (perfil admin/comercial, ativar/desativar, redefinir senha; não exclui o próprio). `POST /api/auth/change-password`. Web: `/admin/usuarios`, `/admin/conta`; nav e dashboard escondem financeiro p/ comercial. Token segue em localStorage (httpOnly = melhoria futura).
 
-\- \*\*Status:\*\* ✅ \*\*Área administrativa completa\*\* — Fase 1 (auth+CRM) · Fase 2 (orçamentos) · Fase 3 (financeiro: recebíveis/despesas/fluxo) · Fase 4 (dashboard) · perfis/usuários/troca-de-senha. Tudo validado end-to-end em produção. Pendentes opcionais: notificação de vencimentos (BullMQ), export CSV, migrar token p/ cookie httpOnly, testar UI por clique.
+\- \*\*Notificação de vencimentos (EM PRODUÇÃO):\*\* `RemindersModule` — cron diário (`@nestjs/schedule`, `0 11 * * *` = 11h UTC ≈ 8h BRT) que avisa o escritório sobre recebíveis vencidos + a vencer em ≤3 dias, via WhatsApp (Evolution) + e-mail; degrada com warn se credenciais vazias (caso atual em prod). `GET /api/reminders/preview` e `POST /api/reminders/run` (admin). Botão "Notificar vencimentos" em `/admin/financeiro/recebiveis`. `EvolutionService.sendText`/`MailService.sendInternal` genéricos.
+
+\- \*\*Export CSV (EM PRODUÇÃO):\*\* `ExportsModule` — `GET /api/exports/{clientes,recebiveis,despesas,fluxo}.csv` (text/csv; separador `;` + BOM UTF-8 + decimais com vírgula → Excel pt-BR). Financeiro admin-only; clientes p/ ambos. Botão "Exportar CSV" nas páginas; `downloadCsv` baixa via fetch autenticado + blob.
+
+\- \*\*Status:\*\* ✅ \*\*Área administrativa completa\*\* — Fases 1–4 + perfis/usuários/troca-de-senha + notificação de vencimentos + export CSV. Tudo validado end-to-end por API em produção. Pendentes opcionais: configurar Evolution/SMTP (p/ os lembretes saírem de fato), migrar token p/ cookie httpOnly, testar UI por clique.
 
 
 
